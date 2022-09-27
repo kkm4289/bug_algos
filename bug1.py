@@ -22,7 +22,7 @@ class Landscape:
         self.input_image = Image.open(input_image)
         self.pixel_map = self.input_image.load()
 
-        #random start finish points. Adjust if spawned on obstacle.
+        # Random start finish points. Adjust if spawned on obstacle.
         self.start, self.finish = Pixel(random.randint(0, 99),random.randint(0, 99),(255, 0 ,0)), Pixel(random.randint(0, 99),random.randint(0, 99),(0, 0 ,255))
         for point in [self.start, self.finish]:
             r, g, b, p = self.input_image.getpixel((point.x,point.y))
@@ -50,25 +50,28 @@ class Bug1:
     def start(self):
         while True:
             next_step = self.motion_to_goal()
-            self.step(next_step)
+            r, g, b, p = self.landscape.input_image.getpixel((next_step[0],next_step[1]))
+            
+            # Terminal case
+            if (np.array_equal(next_step, self.end_arr)):
+                exit("PATH COMPLETED")
+            
+            # Obstacle
+            if (r,g,b) == (0,0,0):
+                self.boundary_following()
 
+            self.landscape.pixel_map[next_step[0],next_step[1]] = (0,255,0)
+            self.pos.x, self.pos.y = next_step[0],next_step[1]
+        
+            self.landscape.save_path()
 
-
-    """
-    Move a single pixel and leave behind faded trail color.
-    Update self.pos
-    Sense for finish state and obstacles.
-    """
-    def step(self, next_step):
-
-        self.landscape.save_path()
     
     """
     Follow boundary around object then depart from leavepoint on boundary closest to goal.
     Keep list of (point, distance) to determine best leave point.
     """
-    def boundary_following(self, hit_point):
-        pass
+    def boundary_following(self):
+        hit_point = self.pos
 
     """
     Fetch the next step coords in the direction that brings you closest to target.
