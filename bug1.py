@@ -42,24 +42,26 @@ class Bug1:
     def __init__(self, landscape):
         print("New bug 1")
         self.landscape = landscape
+        self.pos = landscape.start
+        self.end_arr = np.array((self.landscape.finish.x, self.landscape.finish.y))
         # self.landscape.pixel_map[landscape.start.x, landscape.start.y] = (0,255,0)
-        # self.landscape.save_path()
+
     
     def start(self):
         while True:
-            self.motion_to_goal()
+            next_step = self.motion_to_goal()
+            self.step(next_step)
 
-    """
-    Sense 8 pixels around bug to see what it's 'touching'.
-    """
-    def sense(self):
-        pass
+
 
     """
     Move a single pixel and leave behind faded trail color.
+    Update self.pos
+    Sense for finish state and obstacles.
     """
-    def step(self):
-        pass
+    def step(self, next_step):
+
+        self.landscape.save_path()
     
     """
     Follow boundary around object then depart from leavepoint on boundary closest to goal.
@@ -69,11 +71,26 @@ class Bug1:
         pass
 
     """
-    Move a step towards target.
+    Fetch the next step coords in the direction that brings you closest to target.
     """
     def motion_to_goal(self):
-        pass
+        pos_arr = np.array((self.pos.x, self.pos.y))
+
+        best_arr = copy(pos_arr)
+        best_dist = np.linalg.norm(self.end_arr - best_arr)
+        # print(best_arr, best_dist)
+        for neighbor in [[0,1], [1,0], [0,-1], [-1,0],[1,1], [-1,-1], [1,-1], [-1,1]]:
+            neighbor_arr = np.array((self.pos.x + neighbor[0], self.pos.y + neighbor[1]))
+            neighbor_dist = np.linalg.norm(self.end_arr - neighbor_arr)
+            if (neighbor_dist < best_dist):
+                best_arr = neighbor_arr
+                best_dist = neighbor_dist
+
+        # print(best_arr, best_dist)
+        return(best_arr)
+                
 
 if __name__ == "__main__":
     landscape = Landscape(sys.argv[1])
     bug1 = Bug1(landscape)
+    bug1.start()
