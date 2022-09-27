@@ -1,2 +1,2 @@
 # bug_algos
-Implemtations of Bug1 and Bug2 motion planning algorithms
+Implementations of Bug1 and Bug2 motion planning algorithms
